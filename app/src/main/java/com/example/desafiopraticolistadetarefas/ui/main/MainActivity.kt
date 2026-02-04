@@ -1,4 +1,4 @@
-package ui.main
+package com.example.desafiopraticolistadetarefas.ui.main
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
