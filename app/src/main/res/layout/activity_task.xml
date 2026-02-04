@@ -1,43 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
     <EditText
-        android:id="@+id/editTextText"
-        android:layout_width="wrap_content"
+        android:id="@+id/etTitulo"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ems="10"
+        android:hint="Título (obrigatório)"
         android:inputType="text"
-        android:text="Name"
-        tools:layout_editor_absoluteX="75dp"
-        tools:layout_editor_absoluteY="103dp" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <EditText
-        android:id="@+id/editTextTextMultiLine"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:gravity="start|top"
+        android:id="@+id/etDescricao"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:hint="Descrição (opcional)"
         android:inputType="textMultiLine"
-        tools:layout_editor_absoluteX="60dp"
-        tools:layout_editor_absoluteY="244dp" />
+        android:gravity="start|top"
+        app:layout_constraintTop_toBottomOf="@id/etTitulo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnSalvar"
+        android:layout_marginTop="12dp"/>
 
     <Button
-        android:id="@+id/cancelar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cancelar"
-        tools:layout_editor_absoluteX="133dp"
-        tools:layout_editor_absoluteY="455dp" />
-
-    <Button
-        android:id="@+id/salvar"
-        android:layout_width="wrap_content"
+        android:id="@+id/btnSalvar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Salvar"
-        tools:layout_editor_absoluteX="149dp"
-        tools:layout_editor_absoluteY="385dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnCancelar"/>
+
+    <Button
+        android:id="@+id/btnCancelar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Cancelar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="8dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

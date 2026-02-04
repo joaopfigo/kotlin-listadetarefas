@@ -10,7 +10,8 @@ import com.example.desafiopraticolistadetarefas.R
 import com.example.desafiopraticolistadetarefas.data.model.Task
 
 class TaskAdapter(
-    private val itens: List<Task>
+    private val itens: MutableList<Task>,
+    private val onItemClick: (index: Int) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.ItemTarefaViewHolder>() {
 
     class ItemTarefaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -30,6 +31,15 @@ class TaskAdapter(
         holder.textoTitulo.text = tarefa.titulo
         holder.textoDescricao.text = tarefa.descricao ?: ""
         holder.checkStatus.isChecked = tarefa.concluida
+        holder.checkStatus.setOnCheckedChangeListener(null) // evita bug de reciclagem
+        holder.checkStatus.isChecked = tarefa.concluida
+
+        holder.checkStatus.setOnCheckedChangeListener { _, isChecked ->
+            tarefa.concluida = isChecked
+        }
+        holder.itemView.setOnClickListener {
+            onItemClick(position)
+        }
     }
 
     override fun getItemCount(): Int = itens.size
