@@ -12,7 +12,7 @@ import com.example.desafiopraticolistadetarefas.data.model.Task
 class TaskAdapter(
     private val itens: MutableList<Task>,
     private val onItemClick: (index: Int) -> Unit,
-    private val onStatusChange: (task: Task, isChecked: Boolean) -> Unit
+    private val onStatusChange: (taskAtualizada: Task) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.ItemTarefaViewHolder>() {
 
     class ItemTarefaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -34,7 +34,7 @@ class TaskAdapter(
         holder.checkStatus.isChecked = tarefa.concluida
 
         holder.checkStatus.setOnCheckedChangeListener { _, isChecked ->
-            onStatusChange(tarefa, isChecked)
+            onStatusChange(tarefa.copy(concluida = isChecked))
         }
 
         holder.itemView.setOnClickListener {

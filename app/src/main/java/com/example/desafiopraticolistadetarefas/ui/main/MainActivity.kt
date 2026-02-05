@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -57,7 +59,14 @@ class MainActivity : AppCompatActivity() {
 
         val btnClearAll = findViewById<Button>(R.id.btnClearAll)
         btnClearAll.setOnClickListener {
-            viewModel.clearAll()
+            AlertDialog.Builder(this)
+                .setTitle("Limpar tudo")
+                .setMessage("Deseja apagar todas as tarefas?")
+                .setPositiveButton("Apagar") { _, _ ->
+                    viewModel.clearAll()
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
         }
 
         // RecyclerView + Adapter (com clique para editar)
@@ -71,8 +80,8 @@ class MainActivity : AppCompatActivity() {
                 putExtra(TaskActivity.EXTRA_DESCRICAO, t.descricao)
             }
             taskFormLauncher.launch(intent)
-        }, onStatusChange = { tarefa, isChecked ->
-            viewModel.update(tarefa.copy(concluida = isChecked))
+        }, onStatusChange = { tarefaAtualizada ->
+            viewModel.update(tarefaAtualizada)
         })
 
         rv.layoutManager = LinearLayoutManager(this)
@@ -90,8 +99,7 @@ class MainActivity : AppCompatActivity() {
                 val pos = viewHolder.bindingAdapterPosition
                 if (pos == RecyclerView.NO_POSITION || pos >= tarefas.size) return
 
-                val removida = tarefas[pos]
-                viewModel.delete(removida)
+                viewModel.delete(tarefas[pos])
             }
         }
         ItemTouchHelper(swipe).attachToRecyclerView(rv)
@@ -109,6 +117,13 @@ class MainActivity : AppCompatActivity() {
             tarefas.clear()
             tarefas.addAll(lista)
             adapter.notifyDataSetChanged()
+        }
+
+        viewModel.mensagem.observe(this) { msg ->
+            if (!msg.isNullOrBlank()) {
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                viewModel.limparMensagem()
+            }
         }
     }
 }
