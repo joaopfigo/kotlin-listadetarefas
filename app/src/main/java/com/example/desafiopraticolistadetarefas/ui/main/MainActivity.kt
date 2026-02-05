@@ -5,17 +5,17 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.desafiopraticolistadetarefas.R
 import com.example.desafiopraticolistadetarefas.data.model.Task
 import com.example.desafiopraticolistadetarefas.ui.task.TaskActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import androidx.activity.viewModels
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,19 +28,25 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode != Activity.RESULT_OK) return@registerForActivityResult
 
             val data = result.data ?: return@registerForActivityResult
-
             val index = data.getIntExtra(TaskActivity.EXTRA_INDEX, -1)
             val titulo = data.getStringExtra(TaskActivity.EXTRA_TITULO) ?: return@registerForActivityResult
             val descricao = data.getStringExtra(TaskActivity.EXTRA_DESCRICAO)
 
             if (index >= 0 && index < tarefas.size) {
-                // EDITAR (usa copy porque Task tem val)
-                tarefas[index] = tarefas[index].copy(titulo = titulo, descricao = descricao)
+                // EDITAR (Task é imutável -> copy)
+                val antiga = tarefas[index]
+                val editada = antiga.copy(titulo = titulo, descricao = descricao)
+                tarefas[index] = editada
                 adapter.notifyItemChanged(index)
+
+                // Se você já estiver usando Room de verdade, aqui seria: viewModel.update(editada)
             } else {
                 // NOVA
-                tarefas.add(Task(titulo = titulo, descricao = descricao))
+                val nova = Task(titulo = titulo, descricao = descricao)
+                tarefas.add(nova)
                 adapter.notifyItemInserted(tarefas.lastIndex)
+
+                // Se você já estiver usando Room de verdade, aqui seria: viewModel.add(nova)
             }
         }
 
@@ -49,26 +55,30 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        // Edge-to-edge
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        tarefas.addAll(
-            listOf(
-                Task("Estudar Kotlin", "val/var, funções, null safety"),
-                Task("Arrumar layout", "ConstraintLayout sem absoluteX/Y"),
-                Task("Implementar salvar", "Retornar dados da TaskActivity")
-            )
-        )
-
-        // RecyclerView
+        // RecyclerView + Adapter (com clique para editar)
         val rv = findViewById<RecyclerView>(R.id.rvTasks)
-        adapter = TaskAdapter(tarefas)
+
+        adapter = TaskAdapter(tarefas) { index ->
+            val t = tarefas[index]
+            val intent = Intent(this, TaskActivity::class.java).apply {
+                putExtra(TaskActivity.EXTRA_INDEX, index)
+                putExtra(TaskActivity.EXTRA_TITULO, t.titulo)
+                putExtra(TaskActivity.EXTRA_DESCRICAO, t.descricao)
+            }
+            taskFormLauncher.launch(intent)
+        }
+
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
 
+        // Swipe para excluir
         val swipe = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -78,13 +88,17 @@ class MainActivity : AppCompatActivity() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val pos = viewHolder.adapterPosition
-                tarefas.removeAt(pos)
+                if (pos < 0 || pos >= tarefas.size) return
+
+                val removida = tarefas.removeAt(pos)
                 adapter.notifyItemRemoved(pos)
+
+                // Se você já estiver usando Room de verdade, aqui seria: viewModel.delete(removida)
             }
         }
-
         ItemTouchHelper(swipe).attachToRecyclerView(rv)
 
+        // FAB: adicionar
         val fab = findViewById<FloatingActionButton>(R.id.fabAdd)
         fab.setOnClickListener {
             val intent = Intent(this, TaskActivity::class.java)
@@ -92,6 +106,7 @@ class MainActivity : AppCompatActivity() {
             taskFormLauncher.launch(intent)
         }
 
+        // Carregar do Room (se tiver)
         viewModel.tasks.observe(this) { lista ->
             tarefas.clear()
             tarefas.addAll(lista)

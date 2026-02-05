@@ -21,8 +21,7 @@ class TaskAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemTarefaViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_task, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
         return ItemTarefaViewHolder(view)
     }
 
@@ -30,13 +29,15 @@ class TaskAdapter(
         val tarefa = itens[position]
         holder.textoTitulo.text = tarefa.titulo
         holder.textoDescricao.text = tarefa.descricao ?: ""
-        holder.checkStatus.isChecked = tarefa.concluida
-        holder.checkStatus.setOnCheckedChangeListener(null) // evita bug de reciclagem
+        holder.checkStatus.setOnCheckedChangeListener(null)
         holder.checkStatus.isChecked = tarefa.concluida
 
+        // ao mudar o checkbox, copiamos a tarefa (immutável) com novo estado concluída
         holder.checkStatus.setOnCheckedChangeListener { _, isChecked ->
-            tarefa.concluida = isChecked
+            itens[position] = tarefa.copy(concluida = isChecked)
+            notifyItemChanged(position)
         }
+
         holder.itemView.setOnClickListener {
             onItemClick(position)
         }
@@ -44,3 +45,5 @@ class TaskAdapter(
 
     override fun getItemCount(): Int = itens.size
 }
+
+
