@@ -16,4 +16,5 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun add(task: Task) = viewModelScope.launch { dao.insert(task) }
     fun update(task: Task) = viewModelScope.launch { dao.update(task) }
     fun delete(task: Task) = viewModelScope.launch { dao.delete(task) }
+    fun clearAll() = viewModelScope.launch { dao.clearAll() }
 }

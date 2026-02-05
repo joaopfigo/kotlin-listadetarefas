@@ -11,7 +11,8 @@ import com.example.desafiopraticolistadetarefas.data.model.Task
 
 class TaskAdapter(
     private val itens: MutableList<Task>,
-    private val onItemClick: (index: Int) -> Unit
+    private val onItemClick: (index: Int) -> Unit,
+    private val onStatusChange: (task: Task, isChecked: Boolean) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.ItemTarefaViewHolder>() {
 
     class ItemTarefaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -32,10 +33,8 @@ class TaskAdapter(
         holder.checkStatus.setOnCheckedChangeListener(null)
         holder.checkStatus.isChecked = tarefa.concluida
 
-        // ao mudar o checkbox, copiamos a tarefa (immutável) com novo estado concluída
         holder.checkStatus.setOnCheckedChangeListener { _, isChecked ->
-            itens[position] = tarefa.copy(concluida = isChecked)
-            notifyItemChanged(position)
+            onStatusChange(tarefa, isChecked)
         }
 
         holder.itemView.setOnClickListener {
@@ -45,5 +44,3 @@ class TaskAdapter(
 
     override fun getItemCount(): Int = itens.size
 }
-
-

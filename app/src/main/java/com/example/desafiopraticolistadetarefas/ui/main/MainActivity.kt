@@ -3,6 +3,7 @@ package com.example.desafiopraticolistadetarefas.ui.main
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -33,20 +34,12 @@ class MainActivity : AppCompatActivity() {
             val descricao = data.getStringExtra(TaskActivity.EXTRA_DESCRICAO)
 
             if (index >= 0 && index < tarefas.size) {
-                // EDITAR (Task é imutável -> copy)
                 val antiga = tarefas[index]
                 val editada = antiga.copy(titulo = titulo, descricao = descricao)
-                tarefas[index] = editada
-                adapter.notifyItemChanged(index)
-
-                // Se você já estiver usando Room de verdade, aqui seria: viewModel.update(editada)
+                viewModel.update(editada)
             } else {
-                // NOVA
                 val nova = Task(titulo = titulo, descricao = descricao)
-                tarefas.add(nova)
-                adapter.notifyItemInserted(tarefas.lastIndex)
-
-                // Se você já estiver usando Room de verdade, aqui seria: viewModel.add(nova)
+                viewModel.add(nova)
             }
         }
 
@@ -62,10 +55,15 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        val btnClearAll = findViewById<Button>(R.id.btnClearAll)
+        btnClearAll.setOnClickListener {
+            viewModel.clearAll()
+        }
+
         // RecyclerView + Adapter (com clique para editar)
         val rv = findViewById<RecyclerView>(R.id.rvTasks)
 
-        adapter = TaskAdapter(tarefas) { index ->
+        adapter = TaskAdapter(tarefas, onItemClick = { index ->
             val t = tarefas[index]
             val intent = Intent(this, TaskActivity::class.java).apply {
                 putExtra(TaskActivity.EXTRA_INDEX, index)
@@ -73,7 +71,9 @@ class MainActivity : AppCompatActivity() {
                 putExtra(TaskActivity.EXTRA_DESCRICAO, t.descricao)
             }
             taskFormLauncher.launch(intent)
-        }
+        }, onStatusChange = { tarefa, isChecked ->
+            viewModel.update(tarefa.copy(concluida = isChecked))
+        })
 
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
@@ -87,13 +87,11 @@ class MainActivity : AppCompatActivity() {
             ) = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val pos = viewHolder.adapterPosition
-                if (pos < 0 || pos >= tarefas.size) return
+                val pos = viewHolder.bindingAdapterPosition
+                if (pos == RecyclerView.NO_POSITION || pos >= tarefas.size) return
 
-                val removida = tarefas.removeAt(pos)
-                adapter.notifyItemRemoved(pos)
-
-                // Se você já estiver usando Room de verdade, aqui seria: viewModel.delete(removida)
+                val removida = tarefas[pos]
+                viewModel.delete(removida)
             }
         }
         ItemTouchHelper(swipe).attachToRecyclerView(rv)

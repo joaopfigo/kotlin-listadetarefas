@@ -2,6 +2,22 @@
 
 Projeto do desafio técnico do estágio Android.
 
+## Funcionalidades
+- Adicionar tarefas
+- Listar tarefas
+- Editar tarefas
+- Concluir tarefas
+- Excluir tarefas
+
+## Tecnologias
+- Kotlin
+- RecyclerView
+- Room
+- LiveData
+- ViewModel
+
+Os dados são persistidos localmente em um banco Room.
+
 ## Como executar
 1. Clone o repositório:
     - git clone https://github.com/joaopfigo/kotlin-listadetarefas.git
