@@ -5,47 +5,81 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    style="@style/Ui_ContentContainer"
+    android:padding="@dimen/Ui_SpacingL">
 
-    <EditText
-        android:id="@+id/etTitulo"
+    <!-- Title Input with Material Design -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilTitulo"
+        style="@style/Ui_TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Título (obrigatório)"
-        android:inputType="text"
+        android:hint="Título"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:counterEnabled="false"
+        app:helperText="Obrigatório"
+        app:helperTextTextColor="@color/Ui_TextSecondary">
 
-    <EditText
-        android:id="@+id/etDescricao"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etTitulo"
+            style="@style/Ui_EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1"
+            android:singleLine="true"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Description Input with Material Design -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilDescricao"
+        style="@style/Ui_TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:hint="Descrição (opcional)"
-        android:inputType="textMultiLine"
-        android:gravity="start|top"
-        app:layout_constraintTop_toBottomOf="@id/etTitulo"
+        android:hint="Descrição"
+        app:layout_constraintTop_toBottomOf="@id/tilTitulo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/btnSalvar"
-        android:layout_marginTop="12dp"/>
+        app:counterEnabled="false"
+        app:helperText="Opcional"
+        app:helperTextTextColor="@color/Ui_TextHint">
 
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDescricao"
+            style="@style/Ui_EditText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textMultiLine"
+            android:gravity="start|top"
+            android:minLines="4"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Save Button (Primary) -->
     <Button
         android:id="@+id/btnSalvar"
+        style="@style/Ui_ButtonPrimary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Salvar"
+        android:layout_marginBottom="@dimen/Ui_SpacingM"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/btnCancelar"/>
 
+    <!-- Cancel Button (Secondary) -->
     <Button
         android:id="@+id/btnCancelar"
+        style="@style/Ui_ButtonSecondary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Cancelar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="8dp"/>
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

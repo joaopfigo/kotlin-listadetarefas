@@ -69,7 +69,6 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
 
-        // RecyclerView + Adapter (com clique para editar)
         val rv = findViewById<RecyclerView>(R.id.rvTasks)
 
         adapter = TaskAdapter(tarefas, onItemClick = { index ->
@@ -87,7 +86,6 @@ class MainActivity : AppCompatActivity() {
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
 
-        // Swipe para excluir
         val swipe = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -104,7 +102,6 @@ class MainActivity : AppCompatActivity() {
         }
         ItemTouchHelper(swipe).attachToRecyclerView(rv)
 
-        // FAB: adicionar
         val fab = findViewById<FloatingActionButton>(R.id.fabAdd)
         fab.setOnClickListener {
             val intent = Intent(this, TaskActivity::class.java)
@@ -112,7 +109,6 @@ class MainActivity : AppCompatActivity() {
             taskFormLauncher.launch(intent)
         }
 
-        // Carregar do Room (se tiver)
         viewModel.tasks.observe(this) { lista ->
             tarefas.clear()
             tarefas.addAll(lista)
